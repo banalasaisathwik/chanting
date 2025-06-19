@@ -3,12 +3,12 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { SafeAreaProvider } from 'react-native-safe-area-context'; // ✅ add this
 import './global.css';
 
-import OnboardingScreen from 'screens/OnboardingScreen';
-import MainApp from 'screens/MainApp';
-import HomeScreen from 'screens/HomeScreen';
-import ChantingSessionScreen from 'screens/ChantingSessionScreen';
-import LeaderboardScreen from 'screens/LeaderboardScreen';
-import WalletScreen from 'screens/WalletScreen';
+import OnboardingScreen from '~/screens/OnboardingScreen';
+import MainApp from '~/screens/MainApp';
+import HomeScreen from '~/screens/HomeScreen';
+import ChantingSessionScreen from '~/screens/ChantingSessionScreen';
+import LeaderboardScreen from '~/screens/LeaderboardScreen';
+import WalletScreen from '~/screens/WalletScreen';
 
 const Stack = createStackNavigator();
 

@@ -6,10 +6,13 @@ import {
   Animated, 
   StatusBar,
   SafeAreaView,
-  Dimensions 
+  Dimensions,
 } from 'react-native';
 import StarBackground from './StarBackground';
 import type { StackNavigationProp } from '@react-navigation/stack';
+
+// 🆕 Import Premanand Maharaj image
+const premanandImage = require('../../assets/premanandji.jpg');
 
 const { height } = Dimensions.get('window');
 
@@ -24,10 +27,11 @@ const OnboardingScreen = ({ navigation }: OnboardingScreenProps) => {
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const scaleAnim = useRef(new Animated.Value(0.8)).current;
   const buttonFadeAnim = useRef(new Animated.Value(0)).current;
+  const imageFadeAnim = useRef(new Animated.Value(0)).current; // 🆕 Added image animation
 
   const quotes = [
-    { text: "Arise, awake, and stop not until the goal is reached.", author: "Swami Vivekananda" },
-    { text: "In the divine name lies the power to transform the soul.", author: "Premanand Maharaj" },
+    { text: "Repeating the names of God has wonderful power.", author: "Swami Vivekananda" },
+    { text: "You get whatever you want just by chanting God's name.", author: "Premanand Maharaj" },
   ];
 
   useEffect(() => {
@@ -76,18 +80,26 @@ const OnboardingScreen = ({ navigation }: OnboardingScreenProps) => {
     }
   }, [currentQuote, fadeAnim, scaleAnim]);
 
-  // Animate button when second quote appears
+  // Animate button and image when second quote appears
   useEffect(() => {
     if (currentQuote === 1) {
       setTimeout(() => {
-        Animated.timing(buttonFadeAnim, {
-          toValue: 1,
-          duration: 800,
-          useNativeDriver: true,
-        }).start();
+        // 🆕 Animate both button and image together
+        Animated.parallel([
+          Animated.timing(buttonFadeAnim, {
+            toValue: 1,
+            duration: 800,
+            useNativeDriver: true,
+          }),
+          Animated.timing(imageFadeAnim, {
+            toValue: 1,
+            duration: 800,
+            useNativeDriver: true,
+          }),
+        ]).start();
       }, 500);
     }
-  }, [currentQuote, buttonFadeAnim]);
+  }, [currentQuote, buttonFadeAnim, imageFadeAnim]); // 🆕 Added imageFadeAnim dependency
 
   const handleBeginJourney = () => {
     navigation.replace('Welcome'); // Navigate to HomeScreen
@@ -111,7 +123,7 @@ const OnboardingScreen = ({ navigation }: OnboardingScreenProps) => {
             style={{ 
               opacity: fadeAnim, 
               transform: [{ scale: scaleAnim }],
-              marginBottom: 80,
+              marginBottom: 40, // 🆕 Reduced margin to make space for image
               alignItems: 'center',
               flex: 1,
               justifyContent: 'center'
@@ -146,6 +158,34 @@ const OnboardingScreen = ({ navigation }: OnboardingScreenProps) => {
               - {quotes[currentQuote].author}
             </Text>
           </Animated.View>
+
+          {/* 🆕 Premanand Maharaj Image - Only show with second quote */}
+          {currentQuote === 1 && (
+            <Animated.View 
+              style={{ 
+                opacity: imageFadeAnim,
+                transform: [{ scale: imageFadeAnim }],
+                marginBottom: 132,
+                alignItems: 'center'
+              }}
+            >
+              <Animated.Image
+                source={premanandImage}
+                style={{
+                  width: 120,
+                  height: 120,
+                  borderRadius: 60, // Make it perfectly circular
+                  borderWidth: 3,
+                  borderColor: '#fbbf24', // Golden border matching the theme
+                  shadowColor: '#d4af37',
+                  shadowOffset: { width: 0, height: 4 },
+                  shadowOpacity: 0.4,
+                  shadowRadius: 8,
+                }}
+                resizeMode="cover"
+              />
+            </Animated.View>
+          )}
 
           {/* Button Section */}
           {currentQuote === 1 && (
