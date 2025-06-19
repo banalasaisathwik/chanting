@@ -10,6 +10,12 @@
       "tsconfigPaths": true
     },
     "plugins": [
+      [
+        "@react-native-google-signin/google-signin",
+        {
+          "iosUrlScheme": "com.googleusercontent.apps._some_id_here_"
+        }
+      ],
       "expo-audio"
     ],
     "orientation": "portrait",
@@ -30,7 +36,20 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
+      },
+      "permissions": [
+        "android.permission.RECORD_AUDIO",
+        "android.permission.MODIFY_AUDIO_SETTINGS"
+      ],
+      "package": "com.sai_sathwik.myexpoapp"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "e0b80148-dcec-4c3b-a1da-2cf82f401447"
       }
-    }
+    },
+    "owner": "sai_sathwik"
+
+
   }
 }
