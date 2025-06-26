@@ -31,17 +31,8 @@ const InstructionBox: React.FC<InstructionBoxProps> = ({ mode }) => {
       }}>
         Each cycle completes at 108 counts
       </Text>
-      {__DEV__ && (
-        <Text style={{
-          color: 'rgba(255, 193, 7, 0.8)',
-          fontSize: 11,
-          textAlign: 'center',
-          marginTop: 8,
-          fontStyle: 'italic',
-        }}>
-          Volume buttons: Install react-native-volume-manager for production
-        </Text>
-      )}
+     
+  
     </View>
   );
 };

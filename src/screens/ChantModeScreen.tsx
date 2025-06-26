@@ -1,6 +1,6 @@
 // File: screens/ChantModeScreen.tsx (Updated with Cross-Platform Popup)
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, Animated, ScrollView } from 'react-native';
+import { View, Text, Animated, ScrollView, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import StarBackground from './StarBackground';
 
@@ -26,6 +26,7 @@ import {
   createSectionTransitionAnimation,
   ANIMATION_VALUES 
 } from '../utils/chantModeAnimations';
+import { useAuth } from 'contexts/AuthContext';
 
 const ChantModeScreen: React.FC<ChantModeScreenProps> = ({ navigation }) => {
   // State
@@ -77,10 +78,51 @@ const ChantModeScreen: React.FC<ChantModeScreenProps> = ({ navigation }) => {
     createSectionTransitionAnimation(modesSectionAnim, 400).start();
   };
 
-  const handleStartChanting = () => {
-    console.log('Start Chanting:', { selectedMode, selectedMantra });
-    navigation.navigate('ChantingSession', { mantra: selectedMantra, mode: selectedMode });
-  };
+  const [checkingBalance, setCheckingBalance] = useState(false);
+const { user, loading } = useAuth();
+
+const handleStartChanting = async () => {
+  if (loading) return;
+
+  if (!user) {
+    navigation.reset({
+      index: 0,
+      routes: [{ name: 'HomeScreen' }],
+    });
+    return;
+  }
+
+  if (!selectedMode || !selectedMantra) return;
+
+  setCheckingBalance(true);
+
+  try {
+    const res = await fetch('http://192.168.29.32:3000/api/balance', {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${user.token}`,
+      },
+    });
+
+    if (!res.ok) throw new Error('Failed to fetch balance');
+
+    const data = await res.json();
+    const balance = data.balance;
+
+    if (balance < 1) {
+      navigation.navigate('Wallet');
+    } else {
+      console.log('Start Chanting:', { selectedMode, selectedMantra });
+      navigation.navigate('ChantingSession', { mantra: selectedMantra, mode: selectedMode });
+    }
+  } catch (error) {
+    console.error('❌ Error fetching balance:', error);
+  } finally {
+    setCheckingBalance(false);
+  }
+};
+
+
 
   // Data
   const selectedMantraData = mantras.find(m => m.id === selectedMantra);
@@ -171,6 +213,10 @@ const ChantModeScreen: React.FC<ChantModeScreenProps> = ({ navigation }) => {
             fadeAnim={fadeAnim}
             buttonScale={buttonScale}
           />
+          {checkingBalance && (
+  <ActivityIndicator size="large" color="#FFD700" style={{ marginTop: 20 }} />
+)}
+
         </ScrollView>
 
         {/* 🆕 Cross-Platform First Time Info Popup */}

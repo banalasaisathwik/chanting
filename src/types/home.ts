@@ -24,6 +24,7 @@ export interface FeatureCardProps {
 }
 
 export interface PremiumButtonProps {
+  disabled?: boolean;
   onPress: () => void;
   icon: string;
   text: string;

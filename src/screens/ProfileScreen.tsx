@@ -53,7 +53,7 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ navigation }) => {
 
   const sections = [
     <UserProfileHeader userData={userData} navigation={navigation} />,
-    <StatsCards userData={userData} />,
+    <StatsCards />,
     <ChartSection userData={userData} chartVisible={chartVisible} />,
     <WalletSection userData={userData} onWalletPress={handleWalletPress} />,
     <AboutSection />,

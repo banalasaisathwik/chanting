@@ -65,7 +65,7 @@ const RechargeButton: React.FC<RechargeButtonProps> = ({
                 fontSize: 18,
                 fontWeight: 'bold',
               }}>
-                Processing Sacred Payment...
+                Processing  Payment...
               </Text>
             </View>
           ) : (

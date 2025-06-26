@@ -1,17 +1,22 @@
 // File: components/profile/StatCard.tsx
 import React, { useRef } from 'react';
-import { View, Text, TouchableOpacity, Animated } from 'react-native';
+import { View, Text, TouchableOpacity, Animated, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { StatCardProps } from '../../types/profile';
 
-const StatCard: React.FC<StatCardProps> = ({ 
-  title, 
-  value, 
-  subtitle, 
-  icon, 
+type ExtendedProps = StatCardProps & {
+  loading?: boolean;
+};
+
+const StatCard: React.FC<ExtendedProps> = ({
+  title,
+  value,
+  subtitle,
+  icon,
   gradientColors,
-  iconColor = '#FFD700'
+  iconColor = '#FFD700',
+  loading = false,
 }) => {
   const cardScale = useRef(new Animated.Value(1)).current;
 
@@ -59,43 +64,57 @@ const StatCard: React.FC<StatCardProps> = ({
           }}
         >
           <View style={{ alignItems: 'flex-end' }}>
-            <View style={{
-              width: 48,
-              height: 48,
-              backgroundColor: 'rgba(255, 255, 255, 0.15)',
-              borderRadius: 16,
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}>
+            <View
+              style={{
+                width: 48,
+                height: 48,
+                backgroundColor: 'rgba(255, 255, 255, 0.15)',
+                borderRadius: 16,
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
               <Ionicons name={icon as any} size={24} color={iconColor} />
             </View>
           </View>
-          
+
           <View>
-            <Text style={{ 
-              color: 'rgba(255, 255, 255, 0.8)', 
-              fontSize: 12, 
-              fontWeight: '600',
-              textTransform: 'uppercase',
-              letterSpacing: 1,
-              marginBottom: 4,
-            }}>
+            <Text
+              style={{
+                color: 'rgba(255, 255, 255, 0.8)',
+                fontSize: 12,
+                fontWeight: '600',
+                textTransform: 'uppercase',
+                letterSpacing: 1,
+                marginBottom: 4,
+              }}
+            >
               {title}
             </Text>
-            <Text style={{ 
-              color: '#FFFFFF', 
-              fontSize: 24, 
-              fontWeight: 'bold',
-              marginBottom: 2,
-            }}>
-              {value}
-            </Text>
-            {subtitle && (
-              <Text style={{ 
-                color: iconColor, 
-                fontSize: 11, 
-                fontWeight: '600',
-              }}>
+
+            {loading ? (
+              <ActivityIndicator size="small" color="#facc15" style={{ marginTop: 4 }} />
+            ) : (
+              <Text
+                style={{
+                  color: '#FFFFFF',
+                  fontSize: 24,
+                  fontWeight: 'bold',
+                  marginBottom: 2,
+                }}
+              >
+                {value}
+              </Text>
+            )}
+
+            {!loading && subtitle && (
+              <Text
+                style={{
+                  color: iconColor,
+                  fontSize: 11,
+                  fontWeight: '600',
+                }}
+              >
                 {subtitle}
               </Text>
             )}

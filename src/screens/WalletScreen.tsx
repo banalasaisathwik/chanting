@@ -1,7 +1,8 @@
 // File: screens/WalletScreen.tsx (Ultra Clean Version)
 import React, { useState, useRef, useEffect } from 'react';
-import { ScrollView, Animated, KeyboardAvoidingView, Platform } from 'react-native';
+import { ScrollView, Animated, KeyboardAvoidingView, Platform, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import StarBackground from './StarBackground';
 
 // Types and Utils
@@ -24,6 +25,9 @@ import {
   RechargeButton,
   SupportMessage,
 } from '../components/wallet';
+
+// If using Razorpay
+import RazorpayCheckout from 'react-native-razorpay';
 
 const WalletScreen: React.FC<WalletScreenProps> = ({ navigation }) => {
   // State
@@ -70,22 +74,73 @@ const WalletScreen: React.FC<WalletScreenProps> = ({ navigation }) => {
   };
 
   const handleRechargeNow = () => {
-    const amount = parseInt(customAmount) || 0;
+    const amount = parseInt(customAmount);
     if (validateRechargeAmount(amount)) {
       showRechargeConfirmation(amount, () => processRecharge(amount));
     }
   };
 
-  const processRecharge = (amount: number) => {
+  // Razorpay recharge logic
+  const processRecharge = async (amount: number) => {
     setIsProcessing(true);
-    setTimeout(() => {
-      setCurrentBalance(prev => prev + amount);
-      setCustomAmount('');
-      setSelectedQuickAmount(null);
+    try {
+  const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODU2NTA3MThlZDNjYmQ2ZDUxOWVkMzgiLCJuYW1lIjoiU2Fpc2F0aHdpayBCYW5hbGEiLCJlbWFpbCI6ImJhbmFsYXNhaXNhdGh3aWtAZ21haWwuY29tIiwiaWF0IjoxNzUwNzAwMTExLCJleHAiOjE3NTEzMDQ5MTF9.DhgLBLpEz3xWkgSestsQ2PXURQU_Vpab4sxJ-00MRrs"
+
+      const orderRes = await fetch('http://192.168.29.32:3000/api/create-order', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ amount }),
+      });
+
+      const order = await orderRes.json();
+      if (!order?.id) throw new Error('Order creation failed');
+
+      const options = {
+        description: 'Recharge your Wallet',
+        image: 'https://your-logo.com/logo.png',
+        currency: 'INR',
+        key: "rzp_test_QgiGGkjrNxiBPG",
+        amount: amount * 100,
+        name: 'YourAppName',
+        order_id: order.id,
+        prefill: {
+          name: 'User',
+          email: 'user@example.com',
+        },
+        theme: { color: '#FFA000' },
+      };
+
+      RazorpayCheckout.open(options)
+        .then(async (response: any) => {
+          const dbRes = await fetch('http://192.168.29.32:3000/api/payments?action=mobile', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({ amountAdded: amount, status: 'success' }),
+          });
+
+          const dbData = await dbRes.json();
+          if (!dbRes.ok) throw new Error(dbData.error || 'DB update failed');
+
+          setCurrentBalance((prev) => prev + amount);
+          animateBalance();
+          setCustomAmount('');
+          setSelectedQuickAmount(null);
+          showRechargeSuccess(amount);
+        })
+        .catch((err: any) => {
+          Alert.alert('Payment Failed', err.description || 'Try again later');
+        });
+    } catch (err: any) {
+      Alert.alert('Recharge Error', err.message || 'Something went wrong');
+    } finally {
       setIsProcessing(false);
-      animateBalance();
-      showRechargeSuccess(amount);
-    }, 2000);
+    }
   };
 
   // Common animation props
@@ -94,7 +149,7 @@ const WalletScreen: React.FC<WalletScreenProps> = ({ navigation }) => {
   return (
     <StarBackground>
       <SafeAreaView style={{ flex: 1 }}>
-        <KeyboardAvoidingView 
+        <KeyboardAvoidingView
           style={{ flex: 1 }}
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         >

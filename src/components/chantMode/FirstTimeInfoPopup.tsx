@@ -106,7 +106,7 @@ const FirstTimeInfoPopup: React.FC = () => {
                 fontWeight: 'bold',
                 marginBottom: 4,
               }}>
-                🙏 Welcome to Sacred Chanting
+                🙏 Welcome to Jaapam
               </Text>
               <Text style={{
                 color: 'rgba(255, 255, 255, 0.7)',
@@ -133,7 +133,7 @@ const FirstTimeInfoPopup: React.FC = () => {
               lineHeight: 24,
               textAlign: 'left',
             }}>
-              <Text style={{ fontWeight: 'bold', color: '#FFD700' }}>₹1</Text> will be deducted daily only when you do chanting to support the system and the team.
+              <Text style={{ fontWeight: 'bold', color: '#FFD700' }}>₹1</Text>will be deducted daily only when you do the chanting, to support the system and the team.
               {'\n\n'}
               You can see your balance and recharge in the{' '}
               <Text style={{ fontWeight: 'bold', color: '#FFD700' }}>Profile tab</Text>.

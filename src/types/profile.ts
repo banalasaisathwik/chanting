@@ -53,7 +53,6 @@ export interface ChartSectionProps {
 }
 
 export interface WalletSectionProps {
-  userData: UserData;
   onWalletPress: () => void;
 }
 

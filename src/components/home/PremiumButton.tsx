@@ -6,6 +6,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { PremiumButtonProps } from '../../types/home';
 
 const PremiumButton: React.FC<PremiumButtonProps> = ({ 
+  disabled,
   onPress, 
   icon, 
   text, 
@@ -36,6 +37,7 @@ const PremiumButton: React.FC<PremiumButtonProps> = ({
         onPressOut={handlePressOut}
         activeOpacity={0.9}
         style={{ marginBottom: 16 }}
+        disabled={disabled}
       >
         <LinearGradient
           colors={colors}
